@@ -1,0 +1,108 @@
+# 📘 LeetCode Deep Dives – Pattern-Based Learning Notes
+
+---
+
+## 🧩 Problem 1: Find the Duplicate Number (Floyd's Cycle Detection)
+
+### 🔍 Problem Statement
+You’re given an array `nums` of length `n + 1`, where each number is in the range `[1, n]`. Exactly one number is duplicated (may appear multiple times).  
+Return the duplicated number.
+
+### ✅ Brute Force Insight
+- Use a `set()` to track seen values
+- Return the number the moment it appears twice
+- ⏱ Time: O(n), ❌ Space: O(n)
+
+---
+
+### 🚀 Optimal Approach: Floyd’s Cycle Detection
+Treat `nums[i]` as a pointer to index `nums[i]`. This forms a linked list where a cycle must exist due to the duplicate.
+
+#### 🔁 Phase 1: Detect Cycle
+- Initialize: `slow = nums[0]`, `fast = nums[0]`
+- Loop: `slow = nums[slow]`, `fast = nums[nums[fast]]`
+- When `slow == fast` → cycle detected
+
+#### 🎯 Phase 2: Find Entrance to Cycle
+- Set `finder = nums[0]`
+- Move both `finder = nums[finder]`, `slow = nums[slow]` until they meet
+- Return the meeting point → the duplicate
+
+---
+
+### 🧠 Why This Works
+- Duplicate creates a cycle in the index-graph
+- Detecting the start of the cycle = finding the repeated number
+- ⏱ Time: O(n)  
+- 🧠 Space: O(1)  
+- 💯 Works for all valid inputs (e.g. `[1,1]`)
+
+---
+
+## 🧩 Problem 2: LRU Cache (System Design + Hash + List)
+
+### 🔍 Problem Statement
+Design an LRU (Least Recently Used) Cache that:
+- Returns value with `get(key)`, else `-1`
+- Updates/inserts key with `put(key, value)`
+- Evicts least recently used key if capacity is exceeded
+
+Each operation must run in ⏱ O(1) time.
+
+---
+
+### 🔑 Core Idea: Dict + Doubly Linked List
+
+| Data Structure     | Role                                |
+|--------------------|--------------------------------------|
+| `dict`             | `key → node` lookup in O(1)          |
+| Doubly Linked List | Track usage order in O(1)            |
+| Dummy Head/Tail    | Simplify insert/remove edge cases    |
+
+---
+
+### ✨ OrderedDict Shortcut (Python Only)
+- Keeps key order by usage
+- `move_to_end(key)` → mark as recently used
+- `popitem(last=False)` → remove least recently used (front)
+
+---
+
+### 🛠 Method Summary
+
+**`__init__(capacity)`**
+- Initialize OrderedDict and store capacity
+
+**`get(key)`**
+- If key not in dict → return -1
+- Else:
+  - Move to end (mark as most recently used)
+  - Return value
+
+**`put(key, value)`**
+- If key exists:
+  - Move to end and update value
+- If key doesn’t exist:
+  - Add new key
+  - If capacity exceeded → pop from front
+
+---
+
+### 🧠 Key Interview Insights
+- `OrderedDict` abstracts doubly linked list internally
+- If implementing from scratch:
+  - Use a dict and your own `Node` + doubly linked list class
+- Still O(1) due to pointer rewiring and dict lookups
+
+---
+
+### ✅ Time & Space
+- Time: O(1) for `get` and `put`
+- Space: O(capacity)
+
+---
+
+### 🔥 Summary Quote for Interviews
+> “I used an OrderedDict to combine hash map lookup with ordered usage tracking. `move_to_end()` and `popitem(last=False)` allow us to update and evict keys in O(1). The approach satisfies both functionality and efficiency guarantees of an LRU cache.”
+
+---
